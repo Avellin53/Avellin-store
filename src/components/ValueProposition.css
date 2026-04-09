@@ -1,0 +1,42 @@
+.vp-section {
+  padding: 6rem 0;
+  background-color: var(--color-gray-50);
+  border-top: 1px solid var(--color-gray-100);
+}
+
+.vp-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 3rem;
+}
+
+.vp-card {
+  padding: 2rem;
+  background-color: var(--color-clean-white);
+  border-radius: 4px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.02);
+  transition: var(--transition);
+}
+
+.vp-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 40px rgba(0,0,0,0.05);
+}
+
+.vp-title {
+  font-size: 1.25rem;
+  margin-bottom: 1rem;
+  color: var(--color-midnight-navy);
+}
+
+.vp-desc {
+  font-size: 0.95rem;
+  color: var(--color-gray-800);
+  line-height: 1.7;
+}
+
+@media (max-width: 768px) {
+  .vp-grid {
+    grid-template-columns: 1fr;
+  }
+}
