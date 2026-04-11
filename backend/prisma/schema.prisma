@@ -1,0 +1,112 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum UserRole {
+  BUYER
+  VENDOR
+  ADMIN
+}
+
+enum VerificationStatus {
+  PENDING
+  VERIFIED
+  REJECTED
+}
+
+enum ProductCategory {
+  FASHION
+  SKINCARE
+}
+
+enum OrderStatus {
+  PENDING
+  PAID
+  SHIPPED
+  DELIVERED
+  CANCELLED
+}
+
+model User {
+  id            String    @id @default(uuid())
+  email         String    @unique
+  passwordHash  String
+  role          UserRole  @default(BUYER)
+  isActive      Boolean   @default(true)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  // Profile links
+  vendorProfile VendorProfile?
+  orders        Order[]
+}
+
+model VendorProfile {
+  id                 String             @id @default(uuid())
+  userId             String             @unique
+  user               User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  brandName          String
+  storeSlug          String             @unique
+  logoUrl            String?
+  description        String?
+  verificationStatus VerificationStatus @default(PENDING)
+  contactEmail       String?
+  rating             Float              @default(5.0)
+  metadata           Json?              // For social links, location, etc.
+
+  products           Product[]
+  orderItems         OrderItem[]
+}
+
+model Product {
+  id            String          @id @default(uuid())
+  vendorId      String
+  vendor        VendorProfile   @relation(fields: [vendorId], references: [id], onDelete: Cascade)
+  category      ProductCategory
+  name          String
+  description   String?
+  basePrice     Decimal         @db.Decimal(10, 2)
+  currency      String          @default("USD")
+  stockQuantity Int             @default(0)
+  images        String[]        // Array of URLs
+  attributes    Json?           // AI-ready schema for category-specific tags
+  tags          String[]
+  isActive      Boolean         @default(true)
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+
+  orderItems    OrderItem[]
+}
+
+model Order {
+  id            String      @id @default(uuid())
+  buyerId       String
+  buyer         User        @relation(fields: [buyerId], references: [id])
+  totalAmount   Decimal     @db.Decimal(10, 2)
+  status        OrderStatus @default(PENDING)
+  paymentStatus String      @default("UNPAID")
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  items         OrderItem[]
+}
+
+model OrderItem {
+  id              String        @id @default(uuid())
+  orderId         String
+  order           Order         @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId       String
+  product         Product       @relation(fields: [productId], references: [id])
+  vendorId        String
+  vendor          VendorProfile @relation(fields: [vendorId], references: [id])
+  quantity        Int           @default(1) 
+  priceAtPurchase Decimal       @db.Decimal(10, 2)
+  status          OrderStatus   @default(PENDING)
+}
