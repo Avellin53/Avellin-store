@@ -1,4 +1,4 @@
-import { useCurrencyStore, CurrencyCode } from '../store/currencyStore';
+import { useCurrencyStore, type CurrencyCode } from "../store/currencyStore";
 
 /**
  * Automatically detects the user's location based on IP 
