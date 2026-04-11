@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 
-export type CurrencyCode = 'NGN' | 'USD' | 'EUR' | 'GBP';
+export type CurrencyCode = "USD" | "EUR" | "GBP" | "NGN";
 
 interface Currency {
   code: CurrencyCode;
