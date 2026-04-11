@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AVELLIN | AI Shopping Assistant</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="demo-bg">
+        <h1>AVELLIN</h1>
+        <p>Where Style Meets Intelligence</p>
+    </div>
+
+    <!-- Chat Widget Toggle -->
+    <button id="chat-toggle" class="chat-toggle">
+        <span class="icon">✨</span>
+        <span class="label">Ask AI</span>
+    </button>
+
+    <!-- Chat Container -->
+    <div id="chat-container" class="chat-container hidden">
+        <div class="chat-header">
+            <div class="header-info">
+                <span class="status-dot"></span>
+                <h3>AVELLIN AI</h3>
+            </div>
+            <button id="chat-close" class="close-btn">&times;</button>
+        </div>
+
+        <div id="chat-messages" class="chat-messages">
+            <div class="message ai">
+                Hello! I'm your AVELLIN stylistic assistant. Looking for a new skincare routine or a fresh outfit for an event? Tell me what you need!
+            </div>
+        </div>
+
+        <!-- Thinking Indicator -->
+        <div id="thinking" class="thinking hidden">
+            <span></span><span></span><span></span>
+        </div>
+
+        <div class="chat-input-area">
+            <input type="text" id="user-input" placeholder="Type your request here..." autocomplete="off">
+            <button id="send-btn">Send</button>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

@@ -1,5 +1,5 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import { ShieldCheck, Lock, Globe, CreditCard } from 'lucide-react';
+import { useCurrencyStore } from '../store/currencyStore';
 import './Footer.css';
 
 interface Props {
@@ -8,48 +8,53 @@ interface Props {
 }
 
 const Footer: React.FC<Props> = ({ currentLang }) => {
+  const currentCurrency = useCurrencyStore(state => state.currentCurrency);
+  
   return (
-    <footer className="footer">
+    <footer className="footer shadow-glass">
       <div className="container footer-grid">
         <div className="footer-col brand-col">
           <h2 className="footer-logo">AVELLIN</h2>
-          <p className="footer-tagline">Premium but Accessible.</p>
-          <div className="footer-controls">
-            <span>Lang: {currentLang}</span> | <span>Currency: USD</span>
+          <p className="footer-tagline">A Bespoke Marketplace for the Modern World.</p>
+          <div className="trust-seals">
+            <ShieldCheck size={20} title="Verified Merchant" />
+            <Lock size={20} title="SSL Encrypted" />
+            <CreditCard size={20} title="PCI-DSS Compliant" />
           </div>
         </div>
 
         <div className="footer-col">
-          <h4>Departments</h4>
+          <h4>Collection</h4>
           <ul>
+            <li><Link to="/">Latest Arrivals</Link></li>
             <li><Link to="/department/clothing">Clothing</Link></li>
-            <li><Link to="/department/shoes">Shoes</Link></li>
-            <li><Link to="/department/bags">Bags</Link></li>
-            <li><Link to="/department/makeup">Makeup</Link></li>
             <li><Link to="/department/skincare">Skincare</Link></li>
           </ul>
         </div>
 
         <div className="footer-col">
-          <h4>Network</h4>
+          <h4>Portal</h4>
           <ul>
-            <li><Link to="/page/open-store">Open a Storefront</Link></li>
-            <li><Link to="/admin">Admin Portal</Link></li>
-            <li><Link to="/page/community-guidelines">Community Guidelines</Link></li>
+            <li><Link to="/auth">Sign In</Link></li>
+            <li><Link to="/vendor-dashboard">Brand Dashboard</Link></li>
+            <li><Link to="/admin">Governance</Link></li>
           </ul>
         </div>
 
         <div className="footer-col">
-          <h4>Trust & Safety</h4>
-          <ul>
-            <li><Link to="/page/buyer-protection">Buyer Protection</Link></li>
-            <li><Link to="/page/secure-chat-policy">Secure Chat Policy</Link></li>
-            <li><Link to="/page/help-desk">Help Desk</Link></li>
-          </ul>
+          <h4>Preferences</h4>
+          <div className="preferences-status">
+            <p><Globe size={14} /> Region: {currentLang}</p>
+            <p>Currency: {currentCurrency.code} ({currentCurrency.symbol})</p>
+          </div>
         </div>
       </div>
       <div className="container footer-bottom">
-        <p>&copy; {new Date().getFullYear()} Avellin Marketplace. All rights reserved.</p>
+        <p>&copy; {new Date().getFullYear()} AVELLIN Luxury Marketplace. All rights reserved.</p>
+        <div className="bottom-links">
+           <span>Terms of Bespoke Service</span>
+           <span>Privacy & Security</span>
+        </div>
       </div>
     </footer>
   );

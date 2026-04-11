@@ -1,0 +1,22 @@
+.currency-switcher {
+  display: flex;
+  align-items: center;
+}
+
+.currency-select {
+  background: white;
+  border: 1px solid #eee;
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  outline: none;
+  color: #1a1a1a;
+  transition: border-color 0.2s;
+}
+
+.currency-select:hover {
+  border-color: #1a1a1a;
+}

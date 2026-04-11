@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import { useStore } from '../store/useStore';
+import { Link, useLocation } from 'react-router-dom';
+import CurrencySwitcher from './CurrencySwitcher';
+import { ShoppingBag, Search, Globe, User } from 'lucide-react';
 import './Navbar.css';
 
 interface NavbarProps {
@@ -11,17 +12,15 @@ const LANGUAGES = [
   { code: 'EN', name: 'English' },
   { code: 'FR', name: 'Français' },
   { code: 'ES', name: 'Español' },
-  { code: 'IT', name: 'Italiano' },
-  { code: 'DE', name: 'Deutsch' },
   { code: 'YR', name: 'Yorùbá' },
   { code: 'IG', name: 'Ndi Igbo' },
-  { code: 'HA', name: 'Hausa' },
 ];
 
 const Navbar: React.FC<NavbarProps> = ({ currentLang, setLanguage }) => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [showLangMenu, setShowLangMenu] = useState(false);
   const { cart, toggleCart } = useStore();
+  const location = useLocation();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -38,23 +37,22 @@ const Navbar: React.FC<NavbarProps> = ({ currentLang, setLanguage }) => {
       <div className="container nav-content">
         <div className="nav-left">
           <ul className="nav-links">
-            <li><a href="#new-arrivals">Shop</a></li>
-            <li><a href="#sellers">Sellers</a></li>
-            <li><a href="#about">About</a></li>
+            <li><Link to="/" className={location.pathname === '/' ? 'active' : ''}>Home</Link></li>
+            <li><Link to="/auth" className={location.pathname === '/auth' ? 'active' : ''}>Sign In</Link></li>
+            <li><Link to="/vendor-dashboard" className={location.pathname === '/vendor-dashboard' ? 'active' : ''}>Vendors</Link></li>
           </ul>
         </div>
         
         <div className="nav-logo">
-          <h1>AVELLIN</h1>
+          <Link to="/"><h1>AVELLIN</h1></Link>
         </div>
 
         <div className="nav-right">
+          <CurrencySwitcher />
+          
           <div className="lang-switcher" onMouseLeave={() => setShowLangMenu(false)}>
-            <button 
-              className="lang-toggle" 
-              onMouseEnter={() => setShowLangMenu(true)}
-            >
-              {currentLangObj.code} ▼
+            <button className="lang-toggle" onMouseEnter={() => setShowLangMenu(true)}>
+              <Globe size={16} /> {currentLangObj.code}
             </button>
             {showLangMenu && (
               <div className="lang-dropdown">
@@ -62,10 +60,7 @@ const Navbar: React.FC<NavbarProps> = ({ currentLang, setLanguage }) => {
                   <button 
                     key={lang.code}
                     className={currentLang === lang.name ? 'active' : ''}
-                    onClick={() => {
-                      setLanguage(lang.name);
-                      setShowLangMenu(false);
-                    }}
+                    onClick={() => { setLanguage(lang.name); setShowLangMenu(false); }}
                   >
                     {lang.name}
                   </button>
@@ -73,10 +68,15 @@ const Navbar: React.FC<NavbarProps> = ({ currentLang, setLanguage }) => {
               </div>
             )}
           </div>
-          <a href="#search" className="nav-icon" onClick={(e) => e.preventDefault()}>Search</a>
-          <button className="nav-icon cart-trigger" onClick={toggleCart} style={{background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'var(--font-primary)'}}>
-            Cart ({cart.reduce((a, b) => a + b.quantity, 0)})
-          </button>
+
+          <div className="nav-actions">
+            <button className="nav-icon"><Search size={18} /></button>
+            <Link to="/auth" className="nav-icon"><User size={18} /></Link>
+            <button className="nav-icon cart-trigger" onClick={toggleCart}>
+              <ShoppingBag size={18} />
+              <span className="cart-badge">{cart.reduce((a, b) => a + b.quantity, 0)}</span>
+            </button>
+          </div>
         </div>
       </div>
     </nav>

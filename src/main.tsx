@@ -1,7 +1,7 @@
-import { StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
-import './index.css'
-import App from './App.tsx'
+import { detectAndSetCurrency } from './utils/currencyUtils';
+
+// Initialize regional detection
+detectAndSetCurrency();
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

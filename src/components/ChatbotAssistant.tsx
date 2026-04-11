@@ -1,103 +1,128 @@
 import React, { useState, useRef, useEffect } from 'react';
 import './ChatbotAssistant.css';
 
-interface Message {
-  id: number;
-  text: string;
-  sender: 'bot' | 'user';
+interface Product {
+  id: string;
+  name: string;
+  category: 'FASHION' | 'SKINCARE';
+  price: number;
+  emoji: string;
 }
 
-const INITIAL_MESSAGE: Message = {
-  id: 1,
-  text: "Hello! I'm your Avellin AI Assistant, powered by Gemini. Whether you need help finding a product, checking sizes, or requesting skincare advice based on your skin type—I'm here to help. What are you looking for today?",
-  sender: 'bot',
-};
+interface Message {
+  id: string;
+  text: string;
+  sender: 'bot' | 'user';
+  products?: Product[];
+}
+
+const MOCK_PRODUCTS: Product[] = [
+  { id: '1', name: 'Velvet Midnight Evening Dress', category: 'FASHION', price: 299.00, emoji: '👗' },
+  { id: '2', name: 'Hydra-Glow Dewy Moisturizer', category: 'SKINCARE', price: 45.00, emoji: '🧴' },
+  { id: '3', name: 'Pure Radiance Vitamin C Serum', category: 'SKINCARE', price: 68.00, emoji: '✨' },
+  { id: '4', name: 'Classic Tailored Blazer', category: 'FASHION', price: 185.00, emoji: '🧥' }
+];
 
 const ChatbotAssistant: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [messages, setMessages] = useState<Message[]>([INITIAL_MESSAGE]);
+  const [messages, setMessages] = useState<Message[]>([
+    { id: '1', text: "Hello! I'm your AVELLIN stylistic assistant. Looking for a new skincare routine or a fresh outfit for an event? Tell me what you need!", sender: 'bot' }
+  ]);
   const [inputValue, setInputValue] = useState('');
+  const [isThinking, setIsThinking] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  // Auto-scroll to bottom when new messages are added
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages, isOpen]);
+  }, [messages, isThinking]);
 
-  const toggleChat = () => setIsOpen(!isOpen);
-
-  const handleSend = () => {
+  const handleSend = async () => {
     if (!inputValue.trim()) return;
 
-    const newUserMsg: Message = { id: Date.now(), text: inputValue, sender: 'user' };
-    setMessages(prev => [...prev, newUserMsg]);
+    const userMsg: Message = { id: Date.now().toString(), text: inputValue, sender: 'user' };
+    setMessages(prev => [...prev, userMsg]);
     setInputValue('');
+    setIsThinking(true);
 
-    // Simulate AI typing delay and response
+    // Simulate AI thinking
     setTimeout(() => {
-      let botReply = "I can certainly help with that. Let me scan our verified sellers for the best options that match your request.";
-      
-      if (newUserMsg.text.toLowerCase().includes('skin') || newUserMsg.text.toLowerCase().includes('face')) {
-        botReply = "Based on my analysis of premium skincare available, I highly recommend checking out 'Alara Skincare' in the Spotlight section. They use organic ingredients highly rated for sensitive skin. Would you like me to take you to their storefront?";
-      } else if (newUserMsg.text.toLowerCase().includes('bag') || newUserMsg.text.toLowerCase().includes('leather')) {
-        botReply = "I found exactly what you need. 'Onyx Leather' offers 5-star rated accessories. I've curated a list of genuine leather pieces perfectly suited to a minimalist aesthetic.";
-      }
+      const lowerQuery = userMsg.text.toLowerCase();
+      const matched = MOCK_PRODUCTS.filter(p => 
+        lowerQuery.includes(p.name.toLowerCase()) || 
+        lowerQuery.includes(p.category.toLowerCase()) ||
+        (p.category === 'SKINCARE' && lowerQuery.includes('skin')) ||
+        (p.category === 'FASHION' && (lowerQuery.includes('dress') || lowerQuery.includes('outfit')))
+      );
 
-      setMessages(prev => [...prev, { id: Date.now(), text: botReply, sender: 'bot' }]);
+      const botMsg: Message = {
+        id: (Date.now() + 1).toString(),
+        text: matched.length > 0 ? "I've found these recommendations for you:" : "That's an interesting request! I'm still learning your style, but check these out.",
+        sender: 'bot',
+        products: matched.length > 0 ? matched.slice(0, 3) : MOCK_PRODUCTS.slice(0, 2)
+      };
+
+      setIsThinking(false);
+      setMessages(prev => [...prev, botMsg]);
     }, 1500);
-  };
-
-  const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') {
-      handleSend();
-    }
   };
 
   return (
     <div className="chatbot-widget">
-      {isOpen && (
-        <div className="chatbot-window">
-          <div className="chatbot-header">
-            <div className="chatbot-header-info">
-              <div className="chatbot-title-content">
-                <img src="/avellin-logo.jpeg" alt="Avellin Logo" className="chatbot-header-logo" />
-                <span className="chatbot-title">Avellin Assistant</span>
-              </div>
-              <span className="chatbot-powered">Powered by Gemini AI</span>
+      {!isOpen ? (
+        <button className="chat-toggle-btn" onClick={() => setIsOpen(true)}>
+          <span className="sparkle">✨</span> Ask AI
+        </button>
+      ) : (
+        <div className="chat-window shadow-glass">
+          <div className="chat-header">
+            <div className="status-container">
+              <span className="status-dot"></span>
+              <h3>AVELLIN AI</h3>
             </div>
-            <button className="chatbot-close" onClick={toggleChat}>✕</button>
+            <button className="close-btn" onClick={() => setIsOpen(false)}>&times;</button>
           </div>
-          
-          <div className="chatbot-messages">
+
+          <div className="chat-messages">
             {messages.map((msg) => (
-              <div key={msg.id} className={`chat-bubble ${msg.sender}`}>
-                {msg.sender === 'bot' && <strong>✨ AI: </strong>}
-                {msg.text}
+              <div key={msg.id} className="message-wrapper">
+                <div className={`message-bubble ${msg.sender}`}>
+                  {msg.text}
+                </div>
+                {msg.products && (
+                  <div className="product-results">
+                    {msg.products.map(product => (
+                      <div key={product.id} className="mini-product-card">
+                        <div className="mini-img">{product.emoji}</div>
+                        <div className="mini-info">
+                          <span className="mini-cat">{product.category}</span>
+                          <h4>{product.name}</h4>
+                          <p>${product.price.toFixed(2)}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
             ))}
+            {isThinking && (
+              <div className="thinking-dots">
+                <span></span><span></span><span></span>
+              </div>
+            )}
             <div ref={messagesEndRef} />
           </div>
-          
-          <div className="chatbot-input-area">
-            <input 
-              type="text" 
-              className="chatbot-input" 
-              placeholder="Ask for recommendations..." 
+
+          <div className="chat-input-area">
+            <input
+              type="text"
+              placeholder="Type your request..."
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
-              onKeyPress={handleKeyPress}
+              onKeyPress={(e) => e.key === 'Enter' && handleSend()}
             />
-            <button className="chatbot-send" onClick={handleSend}>
-              ➤
-            </button>
+            <button onClick={handleSend}>Send</button>
           </div>
         </div>
-      )}
-      
-      {!isOpen && (
-        <button className="chatbot-button has-img" onClick={toggleChat} aria-label="Open AI Assistant">
-          <img src="/avellin-logo.jpeg" alt="Avellin Logo" className="chatbot-btn-img" />
-        </button>
       )}
     </div>
   );
